@@ -23,6 +23,8 @@ class Book(models.Model):
     status = models.CharField(max_length=50, choices=STATUS_CHOICES, default=STATUS_CHOICES[0][0],
                               verbose_name='Book status')
     slug = models.SlugField(max_length=255, blank=True, null=True) # for future functionality
+    category = models.ForeignKey('webapp.Category', on_delete=models.CASCADE, related_name='book_category',
+                                 verbose_name='Book Category')
     created_at = models.DateTimeField(auto_now_add=True)
 
     def __str__(self):
