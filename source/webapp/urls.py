@@ -1,15 +1,16 @@
 from django.urls import path, include
 from rest_framework import routers
 
-from webapp.views import BookViewset, CategoryViewset
+from webapp.views import BookViewset, CategoryViewset, BookCategoryListView
 
 router = routers.DefaultRouter()
 router.register(r'books', BookViewset, basename='books')
 router.register(r'categories', CategoryViewset, basename='categories')
 
 
-app_name='api_v1'
+app_name = 'api_v1'
 
 urlpatterns = [
-    path('', include(router.urls))
+    path('', include(router.urls)),
+    path('books/category/<int:pk>/', BookCategoryListView.as_view(), name='books_by_category'),
 ]
