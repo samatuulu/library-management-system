@@ -44,6 +44,31 @@ class Category(models.Model):
         verbose_name_plural = 'Categories'
 
 
+class Order(models.Model):
+    user = models.ForeignKey('auth.User', null=True, blank=True, on_delete=models.SET_NULL,
+                             verbose_name='User', related_name='orders')
+    first_name = models.CharField(max_length=100, verbose_name='Name', null=True, blank=True)
+    last_name = models.CharField(max_length=100, verbose_name='Last name', null=True, blank=True)
+    email = models.EmailField(max_length=50, verbose_name='Email', null=True, blank=True)
+    phone = models.CharField(max_length=20, verbose_name='Phone')
+    books = models.ManyToManyField('webapp.Book', through='OrderBook', through_fields=('order', 'book'),
+                                   verbose_name='Orders', related_name='orders')
+
+    def __str__(self):
+        return str(self.user)
+
+
+class OrderBook(models.Model):
+    order = models.ForeignKey('webapp.Order', on_delete=models.CASCADE, verbose_name='Order',
+                              related_name='order_books')
+    book = models.ForeignKey('webapp.Book', on_delete=models.CASCADE, verbose_name='Book/s',
+                             related_name='order_books')
+    amount = models.DecimalField(max_digits=10, decimal_places=2)
+
+    def __str__(self):
+        return str(self.book.title)
+
+
 RATE_CHOICES = (
     ('one', 1),
     ('two', 2),

@@ -1,8 +1,8 @@
 from rest_framework import viewsets, generics
 from rest_framework.generics import get_object_or_404
 
-from webapp.models import Book, Category
-from webapp.serializers import BookSerializer, CategorySerializer
+from webapp.models import Book, Category, Order
+from webapp.serializers import BookSerializer, CategorySerializer, OrderSerializer
 
 
 class BookViewset(viewsets.ModelViewSet):
@@ -23,3 +23,8 @@ class BookCategoryListView(generics.ListAPIView):
         category = get_object_or_404(Category, pk=self.kwargs['pk'])
         books_by_category = Book.objects.filter(category__name=category)
         return books_by_category
+
+
+class OrderBook(generics.CreateAPIView):
+    queryset = Order
+    serializer_class = OrderSerializer
