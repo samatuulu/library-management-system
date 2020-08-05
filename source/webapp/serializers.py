@@ -26,7 +26,7 @@ class OrderBookSerializer(serializers.ModelSerializer):
         fields = ('id', 'book', 'amount')
 
 
-class OrderSerializer(serializers.ModelSerializer):
+class OrderCreateUpdateSerializer(serializers.ModelSerializer):
     order_book = OrderBookSerializer(source='order_books', write_only=True)
 
     class Meta:
@@ -38,6 +38,20 @@ class OrderSerializer(serializers.ModelSerializer):
         order = Order.objects.create(**validated_data)
         OrderBook.objects.create(order=order, **data)
         return order
+
+    def update(self, instance, validated_data):
+        instance = self.save_data(instance, validated_data)
+        order = validated_data.get('order_books')
+        OrderBook.objects.filter(order=instance.id).update(book=order['book'], amount=order['amount'])
+        return instance
+
+    def save_data(self, instance, validated_data):
+        instance.first_name = validated_data.get('first_name', instance.first_name)
+        instance.last_name = validated_data.get('last_name', instance.last_name)
+        instance.email = validated_data.get('email', instance.email)
+        instance.phone = validated_data.get('phone', instance.phone)
+        instance.save()
+        return instance
 
     def to_representation(self, instance):
         representation = super().to_representation(instance)

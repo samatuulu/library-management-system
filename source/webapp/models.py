@@ -55,7 +55,7 @@ class Order(models.Model):
                                    verbose_name='Orders', related_name='orders')
 
     def __str__(self):
-        return str(self.user)
+        return str(self.first_name)
 
 
 class OrderBook(models.Model):
