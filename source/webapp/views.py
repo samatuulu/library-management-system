@@ -2,7 +2,7 @@ from rest_framework import viewsets, generics
 from rest_framework.generics import get_object_or_404
 
 from webapp.models import Book, Category, Order
-from webapp.serializers import BookSerializer, CategorySerializer, OrderCreateUpdateSerializer
+from webapp.serializers import (BookSerializer, CategorySerializer, OrderCreateUpdateSerializer)
 
 
 class BookViewset(viewsets.ModelViewSet):
@@ -29,7 +29,20 @@ class OrderBook(generics.CreateAPIView):
     queryset = Order
     serializer_class = OrderCreateUpdateSerializer
 
+    def perform_create(self, serializer):
+        serializer.save(user=self.request.user)
+
+
+class OrderBookDetail(generics.RetrieveAPIView):
+    queryset = Order
+    serializer_class = OrderCreateUpdateSerializer
+
 
 class OrderUpdateBook(generics.UpdateAPIView):
+    queryset = Order
+    serializer_class = OrderCreateUpdateSerializer
+
+
+class OrderDeleteBook(generics.DestroyAPIView):
     queryset = Order
     serializer_class = OrderCreateUpdateSerializer
