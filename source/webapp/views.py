@@ -1,8 +1,10 @@
 from rest_framework import viewsets, generics
 from rest_framework.generics import get_object_or_404
 
-from webapp.models import Book, Category, Order
-from webapp.serializers import (BookSerializer, CategorySerializer, OrderCreateUpdateSerializer)
+from webapp.models import Book, Category, Order, Feedback
+from webapp.serializers import (BookSerializer, CategorySerializer, OrderCreateUpdateSerializer,
+                                FeedbackSerializer
+                                )
 
 
 class BookViewset(viewsets.ModelViewSet):
@@ -16,7 +18,7 @@ class CategoryViewset(viewsets.ModelViewSet):
 
 
 class BookCategoryListView(generics.ListAPIView):
-    queryset = Category
+    queryset = Category.objects.all()
     serializer_class = BookSerializer
 
     def get_queryset(self):
@@ -25,24 +27,29 @@ class BookCategoryListView(generics.ListAPIView):
         return books_by_category
 
 
-class OrderBook(generics.CreateAPIView):
-    queryset = Order
+class OrderBookView(generics.CreateAPIView):
+    queryset = Order.objects.all()
     serializer_class = OrderCreateUpdateSerializer
-
-    def perform_create(self, serializer):
-        serializer.save(user=self.request.user)
 
 
 class OrderBookDetail(generics.RetrieveAPIView):
-    queryset = Order
+    queryset = Order.objects.all()
     serializer_class = OrderCreateUpdateSerializer
 
 
 class OrderUpdateBook(generics.UpdateAPIView):
-    queryset = Order
+    queryset = Order.objects.all()
     serializer_class = OrderCreateUpdateSerializer
 
 
 class OrderDeleteBook(generics.DestroyAPIView):
-    queryset = Order
+    queryset = Order.objects.all()
     serializer_class = OrderCreateUpdateSerializer
+
+
+class FeedbackViewset(viewsets.ModelViewSet):
+    queryset = Feedback.objects.all()
+    serializer_class = FeedbackSerializer
+
+    def perform_create(self, serializer):
+        serializer.save(user=self.request.user)

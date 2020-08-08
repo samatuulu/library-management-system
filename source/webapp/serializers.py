@@ -1,11 +1,9 @@
 from rest_framework import serializers
 
-from webapp.models import Book, BookAuthor, Category, Order, OrderBook
+from webapp.models import Book, Category, Order, OrderBook, Feedback
 
 
 class BookSerializer(serializers.ModelSerializer):
-    author = serializers.PrimaryKeyRelatedField(many=False, queryset=BookAuthor.objects.all())
-    category = serializers.PrimaryKeyRelatedField(many=False, queryset=Category.objects.all())
 
     class Meta:
         model = Book
@@ -31,12 +29,12 @@ class OrderCreateUpdateSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = Order
-        fields = ('id', 'first_name', 'last_name', 'email', 'phone', 'order_book')
+        fields = ('id', 'first_name', 'last_name', 'email', 'phone', 'order_book',)
 
     def create(self, validated_data):
         data = validated_data.pop('order_books')
         order = Order.objects.create(**validated_data)
-        OrderBook.objects.create(order=order, **data)
+        OrderBook.objects.create(order=order, user=self.context['request'].user, **data)
         return order
 
     def update(self, instance, validated_data):
@@ -59,3 +57,22 @@ class OrderCreateUpdateSerializer(serializers.ModelSerializer):
         representation['book'] = order_book.book.title
         representation['amount'] = order_book.amount
         return representation
+
+
+class UserFilteredPrimaryKeyRelatedField(serializers.PrimaryKeyRelatedField):
+
+    def get_queryset(self):
+        request = self.context.get('request', None)
+        queryset = super(UserFilteredPrimaryKeyRelatedField, self).get_queryset()
+        if not request or not queryset:
+            return None
+        return queryset.filter(user=request.user)
+
+
+class FeedbackSerializer(serializers.ModelSerializer):
+
+    book = UserFilteredPrimaryKeyRelatedField(queryset=OrderBook.objects)
+
+    class Meta:
+        model = Feedback
+        fields = ('id', 'book', 'book_feedback', 'rate')

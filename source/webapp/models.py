@@ -45,8 +45,6 @@ class Category(models.Model):
 
 
 class Order(models.Model):
-    user = models.ForeignKey('auth.User', null=True, blank=True, on_delete=models.SET_NULL,
-                             verbose_name='User', related_name='orders')
     first_name = models.CharField(max_length=100, verbose_name='Name', null=True, blank=True)
     last_name = models.CharField(max_length=100, verbose_name='Last name', null=True, blank=True)
     email = models.EmailField(max_length=50, verbose_name='Email', null=True, blank=True)
@@ -64,6 +62,9 @@ class OrderBook(models.Model):
     book = models.ForeignKey('webapp.Book', on_delete=models.CASCADE, verbose_name='Book/s',
                              related_name='order_books')
     amount = models.DecimalField(max_digits=10, decimal_places=2)
+    user = models.ForeignKey('auth.User', null=True, blank=True, on_delete=models.SET_NULL,
+                             verbose_name='User', related_name='orders')
+
 
     def __str__(self):
         return str(self.book.title)
@@ -79,7 +80,8 @@ RATE_CHOICES = (
 
 
 class Feedback(models.Model):
-    book = models.ForeignKey('webapp.Book', on_delete=models.CASCADE, verbose_name='Book')
+    book = models.ForeignKey('webapp.OrderBook', null=True, blank=True,
+                             on_delete=models.CASCADE, verbose_name='Book')
     user = models.ForeignKey('auth.User', related_name='book_feedback', on_delete=models.CASCADE,
                              null=True, blank=True, verbose_name='User')
     book_feedback = models.TextField(max_length=1000, verbose_name='Feedback')
